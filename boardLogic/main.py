@@ -13,35 +13,29 @@ class ChessBoard:
         # a1 = digitalio.DigitalInOut(board.G1)
         # a1.direction = digitalio.Direction.INPUT
 
-        # "a" column of squares
-        a1 = True
-        a2 = True
-        a3 = False
-        a4 = False
-        a5 = False
-        a6 = False
-        a7 = False
-        a8 = False
-        a_column = [a1, a2, a3, a4, a5, a6, a7, a8]
+        board_matrix = [[0 for i in range(8)] for j in range(8)]
 
-        b1 = True
+        for j in range(2):
+            for i in range(8):
+                board_matrix[j][i] = True
 
-        c1 = True
+        for j in range(2, 6):
+            for i in range(8):
+                board_matrix[j][i] = False
 
-        d1 = True
+        for j in range(6, 8):
+            for i in range(8):
+                board_matrix[j][i] = True
 
-        e1 = True
+        print("Testing the matrix")
+        for row in board_matrix:
+            print(row)
 
-        f1 = True
-
-        g1 = True
-
-        h1 = True
 
     def check_for_pick_up(self):
         # Checks the squares that were True and sees if they are still true
         # Alternate implementation is looking at the serialized board state and looking for differences
-        print("Checking for picked up piece")
+        pass
 
     # ian implements
     def serialize_state(self):
@@ -62,6 +56,24 @@ class ChessBoard:
         print("Legal moves are:", legal_moves)
         return legal_moves
 
+    def move_knight(self, location):
+        pass
+
+    def move_rook(self, location):
+        pass
+
+    def move_bishop(self, location):
+        pass
+
+    def move_king(self, location):
+        pass
+
+    def move_queen(self, location):
+        pass
+
+    def move_pawn(self, location):
+        pass
+
 
 def sim_input():
     answer = input("Type '1' for on, '0' for off")
@@ -77,14 +89,13 @@ def run_board():
     # run.direction = digitalio.Direction.INPUT
     run = False
 
-    print("Sim run")
-    run = sim_input()
+    run = True
 
+    print("Starting board")
     chess_board = ChessBoard()
 
     while run:
-        chess_board.check_change()
-        print("Running")
+        chess_board.check_for_pick_up()
 
 
 if __name__ == '__main__':
