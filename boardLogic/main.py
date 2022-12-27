@@ -147,7 +147,7 @@ class ChessBoard:
 
         # Wait for any change in board state
         while(making_move):
-            print("Add logic here to check and verify move")
+            pass
         # If legal move, re-serialize the board state
 
         # If illegal move, alarm user and continue waiting until they make a legal move
@@ -155,11 +155,22 @@ class ChessBoard:
 
     def find_legal_moves(self, location, piece_type):
         legal_moves = []
-        # insert logic to calc legal moves
+        # insert logic to calc legal moves white pieces
+        # todo need to add logic to check if somethin is there
         if piece_type == self.WHITE_PAWN:
-            print("It is a white pawn")
             legal_moves.append((location[0] + 2, location[1]))
             legal_moves.append((location[0] + 1, location[1]))
+        elif piece_type == self.WHITE_KNIGHT:
+            legal_moves.append((location[0] + 2, location[1] + 1))
+            legal_moves.append((location[0] + 2, location[1] - 1))
+            legal_moves.append((location[0] - 2, location[1] + 1))
+            legal_moves.append((location[0] - 2, location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1] + 2))
+            legal_moves.append((location[0] + 1, location[1] + 2))
+            legal_moves.append((location[0] - 1, location[1] - 2))
+            legal_moves.append((location[0] + 1, location[1] - 2))
+        elif piece_type == self.WHITE_ROOK:
+            pass
         return legal_moves
 
     def find_piece_type(self, location):
