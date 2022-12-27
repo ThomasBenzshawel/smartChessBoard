@@ -155,6 +155,18 @@ class ChessBoard:
 
     def find_legal_moves(self, location, piece_type):
         legal_moves = []
+        confirmed_legal_moves = []
+
+        # todo replace with ternary
+        color = None
+        enemy_color = None
+        if piece_type & Masks.WHITE == Masks.WHITE:
+            color = Masks.WHITE
+            enemy_color = Masks.BLACK
+        else:
+            color = Masks.BLACK
+            enemy_color = Masks.WHITE
+
         # insert logic to calc legal moves white pieces
         # todo need to add logic to check if somethin is there
         if piece_type == self.WHITE_PAWN:
@@ -170,7 +182,13 @@ class ChessBoard:
             legal_moves.append((location[0] - 1, location[1] - 2))
             legal_moves.append((location[0] + 1, location[1] - 2))
         elif piece_type == self.WHITE_ROOK:
-            pass
+            for row in range(7):
+                legal_moves.append((location[0] + 2, location[1] + 1))
+
+        for move in legal_moves:
+            piece = self.state1.get(move)
+            if piece is None or piece & color == 0b0000000000:
+                confirmed_legal_moves.append(move)
         return legal_moves
 
     def find_piece_type(self, location):
