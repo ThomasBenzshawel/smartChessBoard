@@ -2,6 +2,7 @@
 # import board
 # import digitalio
 # import busio
+import copy
 
 class Masks:
     BLACK = 0b0000000000
@@ -34,6 +35,8 @@ class ChessBoard:
         # These two lines are how all squares will be set up
         # a1 = digitalio.DigitalInOut(board.G1)
         # a1.direction = digitalio.Direction.INPUT
+
+        self.pieces_in_play = 32
 
         # Initial board state
         self.state = {
@@ -124,12 +127,13 @@ class ChessBoard:
                 if self.board_matrix[i][j]:
                     checked_dict[(i, j)] = self.state1[(i, j)]
 
-        if len(checked_dict) != 32:
+        if len(checked_dict) != self.pieces_in_play:
             # get the piece not on the board
             original_set = set(self.state1.items())
             checked_set = set(checked_dict.items())
             difference = original_set ^ checked_set
-            picked_up_piece = list(difference)[0]  #Provides a list where the 0th term is the cords, and the 1st is type
+            picked_up_piece = list(difference)[0]
+            # Provides a list where the 0th term is the cords, and the 1st is type
             self.user_move_piece(picked_up_piece[0], picked_up_piece[1])
             return False
         else:
@@ -142,16 +146,64 @@ class ChessBoard:
 
     def user_move_piece(self, location, piece_type):
         # displays the correct moves the piece can make
+        previous_state = copy.deepcopy(self.state1)
         making_move = True
-        print(piece_type, "can move to ", self.find_legal_moves(location, piece_type))
+        legal_moves = self.find_legal_moves(location, piece_type)
 
         # Wait for any change in board state
-        while(making_move):
-            pass
-        # If legal move, re-serialize the board state
+        while making_move:
 
-        # If illegal move, alarm user and continue waiting until they make a legal move
 
+            print(piece_type, "can move to ", legal_moves)
+
+            # TODO will need to scan for input here (ie. update board matrix)
+            sim_input(self.board_matrix)
+
+            # todo temporary fix to a major problem that needs a meeting to discuss
+            self.state1.pop(location, None)
+
+            count = 0
+
+            for j in range(8):
+                for i in range(8):
+                    if self.board_matrix[i][j]:
+                        count += 1
+                    if self.board_matrix[i][j] and self.state1.get((i, j)) is None:
+                        # TODO "or" part is a temp along fix with popping near line 158
+                        if (i, j) in legal_moves:
+                            making_move = False
+                            print("You made a legal move!")
+                            self.move_piece(location, (i, j), piece_type)
+                            # todo this is just to make playing the game simpler in command prompt
+                            self.print_matrix()
+
+                        else:
+                            making_move = True
+                            print("You made an illegal move! Try again")
+
+                    if not self.board_matrix[i][j] and (i, j) in self.state1.keys():
+                        print("capturing piece")
+
+                        if (i, j) in legal_moves:
+                            # todo this will run into problems on physical board, needs testing
+                            wait = True
+                            while wait:
+                                # todo check for updates
+                                sim_input(self.board_matrix)
+                                # this will only execute the capture if the piece is put on the square
+                                # todo make this be something you can change your mind on
+                                if self.board_matrix[i][j]:
+                                    wait = False
+                                    making_move = False
+                                    print("You made a legal move!")
+                                    self.capture_piece(location, (i, j), piece_type)
+                                    self.print_matrix()
+
+                        else:
+                            making_move = True
+                            print("You made an illegal move! Try again")
+
+        # todo If legal move, re-serialize the board state
 
     def find_legal_moves(self, location, piece_type):
         legal_moves = []
@@ -167,8 +219,9 @@ class ChessBoard:
             color = Masks.BLACK
             enemy_color = Masks.WHITE
 
-        # insert logic to calc legal moves white pieces
-        # todo need to add logic to check if somethin is there
+        # todo this can be converted down to just COLORED PAWN logic IF we find an easy way to
+        #  discern piece type ie. "it is a bishop". Since only pawns have a movement limitation based on color.
+        # logic to calc legal moves white pieces
         if piece_type == self.WHITE_PAWN:
             legal_moves.append((location[0] + 2, location[1]))
             legal_moves.append((location[0] + 1, location[1]))
@@ -182,14 +235,108 @@ class ChessBoard:
             legal_moves.append((location[0] - 1, location[1] - 2))
             legal_moves.append((location[0] + 1, location[1] - 2))
         elif piece_type == self.WHITE_ROOK:
-            for row in range(7):
-                legal_moves.append((location[0] + 2, location[1] + 1))
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1]))
+                legal_moves.append((location[0] - line, location[1]))
+                legal_moves.append((location[0], location[1] + line))
+                legal_moves.append((location[0], location[1] - line))
+        elif piece_type == self.WHITE_BISHOP:
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1] + line))
+                legal_moves.append((location[0] + line, location[1] - line))
+                legal_moves.append((location[0] - line, location[1] + line))
+                legal_moves.append((location[0] - line, location[1] - line))
+        elif piece_type == self.WHITE_QUEEN:
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1]))
+                legal_moves.append((location[0] - line, location[1]))
+                legal_moves.append((location[0], location[1] + line))
+                legal_moves.append((location[0], location[1] - line))
+                legal_moves.append((location[0] + line, location[1] + line))
+                legal_moves.append((location[0] + line, location[1] - line))
+                legal_moves.append((location[0] - line, location[1] + line))
+                legal_moves.append((location[0] - line, location[1] - line))
+        elif piece_type == self.WHITE_KING:
+            # todo double check logic
+            legal_moves.append((location[0] + 1, location[1]))
+            legal_moves.append((location[0] + 1, location[1] + 1))
+            legal_moves.append((location[0] + 1, location[1] - 1))
+            legal_moves.append((location[0], location[1] + 1))
+            legal_moves.append((location[0] - 1, location[1] + 1))
+            legal_moves.append((location[0], location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1]))
+
+        # logic to calc legal moves black pieces
+        if piece_type == self.BLACK_PAWN:
+            legal_moves.append((location[0] - 2, location[1]))
+            legal_moves.append((location[0] - 1, location[1]))
+        elif piece_type == self.BLACK_KNIGHT:
+            legal_moves.append((location[0] + 2, location[1] + 1))
+            legal_moves.append((location[0] + 2, location[1] - 1))
+            legal_moves.append((location[0] - 2, location[1] + 1))
+            legal_moves.append((location[0] - 2, location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1] + 2))
+            legal_moves.append((location[0] + 1, location[1] + 2))
+            legal_moves.append((location[0] - 1, location[1] - 2))
+            legal_moves.append((location[0] + 1, location[1] - 2))
+        elif piece_type == self.BLACK_ROOK:
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1]))
+                legal_moves.append((location[0] - line, location[1]))
+                legal_moves.append((location[0], location[1] + line))
+                legal_moves.append((location[0], location[1] - line))
+        elif piece_type == self.BLACK_BISHOP:
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1] + line))
+                legal_moves.append((location[0] + line, location[1] - line))
+                legal_moves.append((location[0] - line, location[1] + line))
+                legal_moves.append((location[0] - line, location[1] - line))
+        elif piece_type == self.BLACK_QUEEN:
+            for line in range(7):
+                legal_moves.append((location[0] + line, location[1]))
+                legal_moves.append((location[0] - line, location[1]))
+                legal_moves.append((location[0], location[1] + line))
+                legal_moves.append((location[0], location[1] - line))
+                legal_moves.append((location[0] + line, location[1] + line))
+                legal_moves.append((location[0] + line, location[1] - line))
+                legal_moves.append((location[0] - line, location[1] + line))
+                legal_moves.append((location[0] - line, location[1] - line))
+        elif piece_type == self.BLACK_KING:
+            # todo double check logic
+            legal_moves.append((location[0] + 1, location[1]))
+            legal_moves.append((location[0] + 1, location[1] + 1))
+            legal_moves.append((location[0] + 1, location[1] - 1))
+            legal_moves.append((location[0], location[1] + 1))
+            legal_moves.append((location[0] - 1, location[1] + 1))
+            legal_moves.append((location[0], location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1] - 1))
+            legal_moves.append((location[0] - 1, location[1]))
 
         for move in legal_moves:
-            piece = self.state1.get(move)
-            if piece is None or piece & color == 0b0000000000:
-                confirmed_legal_moves.append(move)
-        return legal_moves
+            # if the move is on the board (no negative values) it will be checked for legality
+            if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                piece = self.state1.get(move)
+                # if there is not a piece at the location it is a valid move
+                if piece is None:
+                    confirmed_legal_moves.append(move)
+                # if there is a piece of the opposite color at the location it is a valid move
+                # todo THIS WILL CAUSE PROBLEMS WITH PAWNS
+                # todo this will also cause problems with rooks, bishops, queens
+                elif (piece > 384 and color == Masks.BLACK) or (piece <= 384 and color == Masks.WHITE):
+                    confirmed_legal_moves.append(move)
+
+                # todo this can be converted down to just COLORED PAWN logic IF we find an easy way to
+                #  discern piece type ie. "it is a bishop". Since only pawns have a movement limitation based on color.
+                if piece_type == self.WHITE_ROOK or piece_type == self.BLACK_ROOK:
+                    # todo import this stupid logic
+                    # if the move before it does not exist then the move is not added to the list
+                    # preivious_
+                    # if confirmed_legal_moves[count - 1]
+                    pass
+
+        confirmed_legal_moves.append(location)
+        return confirmed_legal_moves
 
     def find_piece_type(self, location):
         return self.state1.get(location)
@@ -212,6 +359,15 @@ class ChessBoard:
     def move_pawn(self, loc0: tuple, loc1: tuple):
         pass
 
+    def move_piece(self, loc0: tuple, loc1: tuple, piece_type):
+        self.state1.pop(loc0, None)
+        self.state1[loc1] = piece_type
+
+    def capture_piece(self, loc0: tuple, loc1: tuple, piece_type):
+        self.state1.pop(loc0, None)
+        self.state1[loc1] = piece_type
+        self.pieces_in_play -= 1
+
 
 def sim_input(board_matrix):
     i = int(input("enter desired matrix row "))
@@ -227,7 +383,6 @@ def run_board():
     # run = digitalio.DigitalInOut(board.D21)
     # run.direction = digitalio.Direction.INPUT
 
-
     run = True
 
     print("Starting board")
@@ -237,7 +392,6 @@ def run_board():
         chess_board.print_matrix()
         chess_board.check_for_pick_up()
         sim_input(chess_board.board_matrix)
-
 
 
 if __name__ == '__main__':
