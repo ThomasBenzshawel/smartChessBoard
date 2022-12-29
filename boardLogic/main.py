@@ -234,28 +234,173 @@ class ChessBoard:
             legal_moves.append((location[0] + 1, location[1] + 2))
             legal_moves.append((location[0] - 1, location[1] - 2))
             legal_moves.append((location[0] + 1, location[1] - 2))
-        elif piece_type == self.WHITE_ROOK:
-            for line in range(7):
-                legal_moves.append((location[0] + line, location[1]))
-                legal_moves.append((location[0] - line, location[1]))
-                legal_moves.append((location[0], location[1] + line))
-                legal_moves.append((location[0], location[1] - line))
         elif piece_type == self.WHITE_BISHOP:
+            # calc-ing moving down to right
+            can_move_further = True
             for line in range(7):
-                legal_moves.append((location[0] + line, location[1] + line))
-                legal_moves.append((location[0] + line, location[1] - line))
-                legal_moves.append((location[0] - line, location[1] + line))
-                legal_moves.append((location[0] - line, location[1] - line))
+                move = (location[0] + line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up to right
+            for line in range(7):
+                move = (location[0] - line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down and left
+            for line in range(7):
+                move = (location[0] + line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up and left
+            for line in range(7):
+                move = (location[0] - line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+        elif piece_type == self.WHITE_ROOK:
+            # calc-ing moving down
+            can_move_further = True
+            for line in range(7):
+                move = (location[0] + line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up
+            for line in range(7):
+                move = (location[0] - line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving right
+            for line in range(7):
+                move = (location[0], location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving left
+            for line in range(7):
+                move = (location[0], location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
         elif piece_type == self.WHITE_QUEEN:
+            # calc-ing moving down to right
+            can_move_further = True
             for line in range(7):
-                legal_moves.append((location[0] + line, location[1]))
-                legal_moves.append((location[0] - line, location[1]))
-                legal_moves.append((location[0], location[1] + line))
-                legal_moves.append((location[0], location[1] - line))
-                legal_moves.append((location[0] + line, location[1] + line))
-                legal_moves.append((location[0] + line, location[1] - line))
-                legal_moves.append((location[0] - line, location[1] + line))
-                legal_moves.append((location[0] - line, location[1] - line))
+                move = (location[0] + line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up to right
+            for line in range(7):
+                move = (location[0] - line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down and left
+            for line in range(7):
+                move = (location[0] + line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up and left
+            for line in range(7):
+                move = (location[0] - line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down
+            can_move_further = True
+            for line in range(7):
+                move = (location[0] + line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up
+            for line in range(7):
+                move = (location[0] - line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving right
+            for line in range(7):
+                move = (location[0], location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving left
+            for line in range(7):
+                move = (location[0], location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
         elif piece_type == self.WHITE_KING:
             # todo double check logic
             legal_moves.append((location[0] + 1, location[1]))
@@ -280,28 +425,175 @@ class ChessBoard:
             legal_moves.append((location[0] + 1, location[1] + 2))
             legal_moves.append((location[0] - 1, location[1] - 2))
             legal_moves.append((location[0] + 1, location[1] - 2))
-        elif piece_type == self.BLACK_ROOK:
-            for line in range(7):
-                legal_moves.append((location[0] + line, location[1]))
-                legal_moves.append((location[0] - line, location[1]))
-                legal_moves.append((location[0], location[1] + line))
-                legal_moves.append((location[0], location[1] - line))
         elif piece_type == self.BLACK_BISHOP:
+            # calc-ing moving down to right
+            can_move_further = True
             for line in range(7):
-                legal_moves.append((location[0] + line, location[1] + line))
-                legal_moves.append((location[0] + line, location[1] - line))
-                legal_moves.append((location[0] - line, location[1] + line))
-                legal_moves.append((location[0] - line, location[1] - line))
+                move = (location[0] + line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up to right
+            for line in range(7):
+                move = (location[0] - line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down and left
+            for line in range(7):
+                move = (location[0] + line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up and left
+            for line in range(7):
+                move = (location[0] - line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+
+        elif piece_type == self.BLACK_ROOK:
+            # calc-ing moving down
+            can_move_further = True
+            for line in range(7):
+                move = (location[0] + line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up
+            for line in range(7):
+                move = (location[0] - line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving right
+            for line in range(7):
+                move = (location[0], location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving left
+            for line in range(7):
+                move = (location[0], location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+
         elif piece_type == self.BLACK_QUEEN:
+            # calc-ing moving down to right
+            can_move_further = True
             for line in range(7):
-                legal_moves.append((location[0] + line, location[1]))
-                legal_moves.append((location[0] - line, location[1]))
-                legal_moves.append((location[0], location[1] + line))
-                legal_moves.append((location[0], location[1] - line))
-                legal_moves.append((location[0] + line, location[1] + line))
-                legal_moves.append((location[0] + line, location[1] - line))
-                legal_moves.append((location[0] - line, location[1] + line))
-                legal_moves.append((location[0] - line, location[1] - line))
+                move = (location[0] + line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up to right
+            for line in range(7):
+                move = (location[0] - line, location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down and left
+            for line in range(7):
+                move = (location[0] + line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up and left
+            for line in range(7):
+                move = (location[0] - line, location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving down
+            can_move_further = True
+            for line in range(7):
+                move = (location[0] + line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving up
+            for line in range(7):
+                move = (location[0] - line, location[1])
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving right
+            for line in range(7):
+                move = (location[0], location[1] + line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
+            # calc-ing moving left
+            for line in range(7):
+                move = (location[0], location[1] - line)
+                if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                    piece = self.state1.get(move)
+                    # if there is not a piece at the location it is a valid move
+                    if piece is None and can_move_further:
+                        legal_moves.append(move)
+                    elif not move == location:
+                        can_move_further = False
         elif piece_type == self.BLACK_KING:
             # todo double check logic
             legal_moves.append((location[0] + 1, location[1]))
@@ -322,24 +614,27 @@ class ChessBoard:
                     confirmed_legal_moves.append(move)
                 # if there is a piece of the opposite color at the location it is a valid move
                 # todo THIS WILL CAUSE PROBLEMS WITH PAWNS
-                # todo this will also cause problems with rooks, bishops, queens
+                # todo this will also cause problems with bishops, queens
                 elif (piece > 384 and color == Masks.BLACK) or (piece <= 384 and color == Masks.WHITE):
                     confirmed_legal_moves.append(move)
-
-                # todo this can be converted down to just COLORED PAWN logic IF we find an easy way to
-                #  discern piece type ie. "it is a bishop". Since only pawns have a movement limitation based on color.
-                if piece_type == self.WHITE_ROOK or piece_type == self.BLACK_ROOK:
-                    # todo import this stupid logic
-                    # if the move before it does not exist then the move is not added to the list
-                    # preivious_
-                    # if confirmed_legal_moves[count - 1]
-                    pass
 
         confirmed_legal_moves.append(location)
         return confirmed_legal_moves
 
     def find_piece_type(self, location):
         return self.state1.get(location)
+
+    # Attempting to make a private helper method to simplify rook, bishop, queen logic
+    def calc_line_based_move(self, location, legal_moves):
+        for line in range(7):
+            move = (location[0], location[1] + line)
+            if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
+                piece = self.state1.get(move)
+                # if there is not a piece at the location it is a valid move
+                if piece is None and can_move_further:
+                    legal_moves.append(move)
+                elif not move == location:
+                    can_move_further = False
 
     def move_knight(self, loc0: tuple, loc1: tuple):
         pass
