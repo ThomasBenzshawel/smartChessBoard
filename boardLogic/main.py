@@ -223,8 +223,21 @@ class ChessBoard:
         #  discern piece type ie. "it is a bishop". Since only pawns have a movement limitation based on color.
         # logic to calc legal moves white pieces
         if piece_type == self.WHITE_PAWN:
-            legal_moves.append((location[0] + 2, location[1]))
-            legal_moves.append((location[0] + 1, location[1]))
+            piece_1 = self.state1.get((location[0] + 1, location[1]), None)
+            if piece_1 is None:
+                legal_moves.append((location[0] + 1, location[1]))
+
+            piece_2 = self.state1.get((location[0] + 2, location[1]), None)
+            if piece_2 is None and piece_1 is None:
+                legal_moves.append((location[0] + 2, location[1]))
+
+            piece = self.state1.get((location[0] + 1, location[1] + 1), None)
+            if piece is not None and piece <= 384:
+                legal_moves.append((location[0] + 1, location[1] + 1))
+
+            piece = self.state1.get((location[0] + 1, location[1] - 1), None)
+            if piece is not None and piece <= 384:
+                legal_moves.append((location[0] + 1, location[1] - 1))
         elif piece_type == self.WHITE_KNIGHT:
             legal_moves.append((location[0] + 2, location[1] + 1))
             legal_moves.append((location[0] + 2, location[1] - 1))
@@ -414,8 +427,22 @@ class ChessBoard:
 
         # logic to calc legal moves black pieces
         if piece_type == self.BLACK_PAWN:
-            legal_moves.append((location[0] - 2, location[1]))
-            legal_moves.append((location[0] - 1, location[1]))
+            piece_1 = self.state1.get((location[0] - 1, location[1]), None)
+            if piece_1 is None:
+                legal_moves.append((location[0] - 1, location[1]))
+
+            piece_2 = self.state1.get((location[0] - 2, location[1]), None)
+            if piece_2 is None and piece_1 is None:
+                legal_moves.append((location[0] - 2, location[1]))
+
+            piece = self.state1.get((location[0] - 1, location[1] + 1), None)
+            if piece is not None and piece > 384:
+                legal_moves.append((location[0] - 1, location[1] + 1))
+
+            piece = self.state1.get((location[0] - 1, location[1] - 1), None)
+            if piece is not None and piece > 384:
+                legal_moves.append((location[0] - 1, location[1] - 1))
+
         elif piece_type == self.BLACK_KNIGHT:
             legal_moves.append((location[0] + 2, location[1] + 1))
             legal_moves.append((location[0] + 2, location[1] - 1))
