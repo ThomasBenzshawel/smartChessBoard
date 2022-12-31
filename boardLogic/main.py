@@ -125,10 +125,53 @@ class ChessBoard:
         pass
 
     def move_bishop(self, loc0: tuple, loc1: tuple):
-        pass
+        # validate starting and ending locations
+        if not (self.validate_location(loc0) and self.validate_location(loc1)):
+            raise ValueError("One or both of the given locations were invalid: " + str(loc0) + str(loc1))
+        # verify that there is in fact a rook at this location
+        if not (loc0 in self.state[self.WHITE_BISHOP] or loc0 in self.state[self.BLACK_BISHOP]):
+            raise ValueError("Cannot move bishop from a location that does not have one")
+        # verify that the move is legal for a rook
+        slope = (loc0[1] - loc1[1]) / (loc0[0] - loc1[0])
+        if slope != 1:
+            raise ValueError("Bishop can only move diagonally")
+
+        # since we've gotten to this point, we know that the move is legal
+        self.board_matrix[loc0[1]][loc0[0]] = False
+        self.board_matrix[loc1[1]][loc1[0]] = True
+
+        if loc0 in self.state[self.WHITE_BISHOP]:
+            key = self.WHITE_BISHOP
+        else:  # Because of previous validation, we know that it must be contained in BLACK_BISHOP
+            key = self.BLACK_BISHOP
+        i = self.state[key].index(loc0)
+        self.state[key].pop(i)
+        self.state[key].insert(i, loc1)  # insert new location at same index as old location
 
     def move_king(self, loc0: tuple, loc1: tuple):
-        pass
+        # validate starting and ending locations
+        if not (self.validate_location(loc0) and self.validate_location(loc1)):
+            raise ValueError("One or both of the given locations were invalid: " + str(loc0) + str(loc1))
+        # verify that there is in fact a rook at this location
+        if not (loc0 in self.state[self.WHITE_KING] or loc0 in self.state[self.BLACK_KING]):
+            raise ValueError("Cannot move bishop from a location that does not have one")
+        # verify that the move is legal for a king
+        dx = loc0[0] - loc1[0]
+        dy = loc1[1] - loc1[1]
+        if abs(dx) != 1 or abs(dy) != 1:  # TODO - implement castle procedure
+            raise ValueError("Bishop can only move diagonally")
+
+        # since we've gotten to this point, we know that the move is legal
+        self.board_matrix[loc0[1]][loc0[0]] = False
+        self.board_matrix[loc1[1]][loc1[0]] = True
+
+        if loc0 in self.state[self.WHITE_KING]:
+            key = self.WHITE_KING
+        else:  # Because of previous validation, we know that it must be contained in BLACK_KING
+            key = self.BLACK_KING
+        i = self.state[key].index(loc0)
+        self.state[key].pop(i)
+        self.state[key].insert(i, loc1)  # insert new location at same index as old location
 
     def move_queen(self, loc0: tuple, loc1: tuple):
         pass
