@@ -38,13 +38,13 @@ class ChessBoard:
 
         # Initial board state
         self.state = {
-            self.WHITE_PAWN: [],
+            self.WHITE_PAWN: [],  # added in following loops
             self.WHITE_ROOK: [(0, 0), (0, 7)],
             self.WHITE_KNIGHT: [(0, 1), (0, 6)],
             self.WHITE_BISHOP: [(0, 2), (0, 5)],
             self.WHITE_QUEEN: [(0, 3)],  # If a pawn travels the length of the board, multiple queens can be on board
             self.WHITE_KING: (0, 4),  # However, there can only be one king of each color, so no list is used
-            self.BLACK_PAWN: [],
+            self.BLACK_PAWN: [],  # added in following loops
             self.BLACK_ROOK: [(7, 0), (7, 7)],
             self.BLACK_KNIGHT: [(7, 1), (7, 6)],
             self.BLACK_BISHOP: [(7, 2), (7, 5)],
@@ -71,6 +71,8 @@ class ChessBoard:
             for i in range(8):
                 self.board_matrix[j][i] = True
 
+        self.serialized_game_state = self.serialize_state()  # store serialized state for faster access
+
         print("Testing the matrix")
         for row in self.board_matrix:
             print(row)
@@ -80,9 +82,25 @@ class ChessBoard:
         # Alternate implementation is looking at the serialized board state and looking for differences
         pass
 
-    def serialize_state(self) -> bytes:
+    def serialize_state(self) -> bytearray:
         # | 1 bit | 3 bits | 3 bits | 3 bits |
         # | color |  type  |   x    |    y   |
+        ret = bytearray()
+        for key, pieces in self.state.items():
+            if not (key == self.BLACK_KING or key == self.WHITE_KING):
+                for piece in pieces:
+                    x_mask = piece[0] << 3
+                    y_mask = piece[1]
+                    ret.append(key | x_mask | y_mask)
+            elif type(pieces) == tuple:  # piece is a king, so only one for each color (no list of tuples)
+                x_mask = pieces[0] << 3
+                y_mask = pieces[1]
+                ret.append(key | x_mask | y_mask)
+            else:
+                raise ValueError("Unexpected type for King")
+        return ret
+
+    def load_state(self, state: bytearray):
         pass
 
     def user_move_piece(self, location, piece_type):
@@ -117,6 +135,18 @@ class ChessBoard:
 
     def move_pawn(self, loc0: tuple, loc1: tuple):
         pass
+
+    def validate_location(self, loc: tuple) -> bool:
+        ret = True
+        if len(loc) != 2:
+            ret = False
+        elif loc[0] < 0 or loc[0] > 7:
+            ret = False
+        elif loc[1] < 0 or loc[1] > 7:
+            ret = False
+        elif self.state[self.WHITE_KING] == loc or self.state[self.BLACK_KING] == loc:  # cannot capture a king
+            ret = False
+        return ret
 
 
 def sim_input():
