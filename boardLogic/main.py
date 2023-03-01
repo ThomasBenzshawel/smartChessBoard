@@ -3,6 +3,9 @@
 # import digitalio
 # import busio
 import copy
+# todo uncomment this when putting on PI
+import smbus
+
 
 class Masks:
     BLACK = 0b0000000000
@@ -153,11 +156,11 @@ class ChessBoard:
         # Wait for any change in board state
         while making_move:
 
-
             print(piece_type, "can move to ", legal_moves)
 
             # TODO will need to scan for input here (ie. update board matrix)
             sim_input(self.board_matrix)
+            update_board(self.board_matrix)
 
             # todo temporary fix to a major problem that needs a meeting to discuss
             self.state1.pop(location, None)
@@ -190,6 +193,7 @@ class ChessBoard:
                             while wait:
                                 # todo check for updates
                                 sim_input(self.board_matrix)
+                                update_board(self.board_matrix)
                                 # this will only execute the capture if the piece is put on the square
                                 # todo make this be something you can change your mind on
                                 if self.board_matrix[i][j]:
@@ -653,6 +657,7 @@ class ChessBoard:
 
     # Attempting to make a private helper method to simplify rook, bishop, queen logic
     def calc_line_based_move(self, location, legal_moves):
+        can_move_further = True
         for line in range(7):
             move = (location[0], location[1] + line)
             if 0 <= move[0] <= 7 and 0 <= move[1] <= 7:
@@ -701,19 +706,73 @@ def sim_input(board_matrix):
         board_matrix[i][j] = False
 
 
-def run_board():
-    # run = digitalio.DigitalInOut(board.D21)
-    # run.direction = digitalio.Direction.INPUT
+def binary_row_to_boolean(binary_row):
+    return_array = [0 for i in range(8)]
+    num_bits = 8
+    bits = [(binary_row >> bit) & 1 for bit in range(num_bits - 1, -1, -1)]
 
+    count = 0
+    for num in bits:
+        if num == 1:
+            return_array[count] = True
+        else:
+            return_array[count] = False
+        count += 1
+    return return_array
+
+
+def update_board(board_matrix):
+    row_A = bus.read_byte_data(DEVICE_ROW_A, GPIOB)
+    row_A_bool = binary_row_to_boolean(row_A)
+    board_matrix[0] = row_A_bool
+
+
+def initialize_extenders():
+    global bus
+    global DEVICE_ROW_A
+    global IODIRA
+    global IODIRB
+    global OLATA
+    global OLATB
+    global GPIOA
+    global GPIOB
+
+    bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
+
+    DEVICE_ROW_A = 0x20  # Device address (A0-A2)
+
+    IODIRA = 0x00  # Pin direction register A side
+    IODIRB = 0x01  # Pin direction register B side
+
+    OLATA = 0x14  # Register for outputs A side
+    OLATB = 0x15  # Register for outputs B side
+
+    GPIOA = 0x12  # Register for inputs A side
+    GPIOB = 0x13  # Register for inputs B side
+
+    # Set all GPA pins as outputs by setting
+    # all bits of IODIRA register to 0
+    bus.write_byte_data(DEVICE_ROW_A, IODIRA, 0x00)
+
+    # Set all 8 output bits to 0 (all lights off)
+    bus.write_byte_data(DEVICE_ROW_A, OLATA, 0x00)
+
+    # Set all 8 GPB pins as input.
+    bus.write_byte_data(DEVICE_ROW_A, IODIRB, 0xFF)
+
+
+def run_board():
     run = True
 
     print("Starting board")
     chess_board = ChessBoard()
+    initialize_extenders()
 
     while run:
         chess_board.print_matrix()
         chess_board.check_for_pick_up()
         sim_input(chess_board.board_matrix)
+        update_board(chess_board.board_matrix)
 
 
 if __name__ == '__main__':
