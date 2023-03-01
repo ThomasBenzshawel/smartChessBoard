@@ -730,6 +730,13 @@ def update_board(board_matrix):
 def initialize_extenders():
     global bus
     global DEVICE_ROW_A
+    global DEVICE_ROW_B
+    global DEVICE_ROW_C
+    global DEVICE_ROW_D
+    global DEVICE_ROW_E
+    global DEVICE_ROW_F
+    global DEVICE_ROW_G
+    global DEVICE_ROW_H
     global IODIRA
     global IODIRB
     global OLATA
@@ -739,7 +746,15 @@ def initialize_extenders():
 
     bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
 
-    DEVICE_ROW_A = 0x20  # Device address (A0-A2)
+    # Device addresses (A0-A2)
+    DEVICE_ROW_A = 0x20
+    DEVICE_ROW_B = 0x24
+    DEVICE_ROW_C = 0x22
+    DEVICE_ROW_D = 0x26
+    DEVICE_ROW_E = 0x21
+    DEVICE_ROW_F = 0x25
+    DEVICE_ROW_G = 0x23
+    DEVICE_ROW_H = 0x27
 
     IODIRA = 0x00  # Pin direction register A side
     IODIRB = 0x01  # Pin direction register B side
