@@ -153,6 +153,8 @@ class ChessBoard:
         making_move = True
         legal_moves = self.find_legal_moves(location, piece_type)
 
+        light_logic_on(legal_moves)
+
         # Wait for any change in board state
         while making_move:
 
@@ -200,6 +202,8 @@ class ChessBoard:
                                     wait = False
                                     making_move = False
                                     print("You made a legal move!")
+                                    #todo do not know if this is the right place
+                                    light_logic_off()
                                     self.capture_piece(location, (i, j), piece_type)
                                     self.print_matrix()
 
@@ -722,9 +726,53 @@ def binary_row_to_boolean(binary_row):
 
 
 def update_board(board_matrix):
-    row_A = bus.read_byte_data(DEVICE_ROW_A, GPIOB)
-    row_A_bool = binary_row_to_boolean(row_A)
-    board_matrix[0] = row_A_bool
+    # TODO Might have to reverse the order
+    board_matrix[0] = row_update(DEVICE_ROW_A)
+    board_matrix[1] = row_update(DEVICE_ROW_B)
+    board_matrix[2] = row_update(DEVICE_ROW_C)
+    board_matrix[3] = row_update(DEVICE_ROW_D)
+    board_matrix[4] = row_update(DEVICE_ROW_E)
+    board_matrix[5] = row_update(DEVICE_ROW_F)
+    board_matrix[6] = row_update(DEVICE_ROW_G)
+    board_matrix[7] = row_update(DEVICE_ROW_H)
+
+
+def row_update(device):
+    row = bus.read_byte_data(device, GPIOB)
+    row_bool = binary_row_to_boolean(row)
+    return row_bool
+
+
+def light_logic_on(legal_moves):
+    # todo impliment logic to turn
+    for square in legal_moves:
+        if square[0] == 0:
+            bus.write_byte_data(DEVICE_ROW_A, OLATA, square[1])
+        elif square[0] == 1:
+            bus.write_byte_data(DEVICE_ROW_B, OLATA, square[1])
+        elif square[0] == 2:
+            bus.write_byte_data(DEVICE_ROW_C, OLATA, square[1])
+        elif square[0] == 3:
+            bus.write_byte_data(DEVICE_ROW_D, OLATA, square[1])
+        elif square[0] == 4:
+            bus.write_byte_data(DEVICE_ROW_E, OLATA, square[1])
+        elif square[0] == 5:
+            bus.write_byte_data(DEVICE_ROW_F, OLATA, square[1])
+        elif square[0] == 6:
+            bus.write_byte_data(DEVICE_ROW_G, OLATA, square[1])
+        elif square[0] == 7:
+            bus.write_byte_data(DEVICE_ROW_H, OLATA, square[1])
+
+
+def light_logic_off():
+    bus.write_byte_data(DEVICE_ROW_A, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_B, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_C, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_D, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_E, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_F, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_G, OLATA, 0x00)
+    bus.write_byte_data(DEVICE_ROW_H, OLATA, 0x00)
 
 
 def initialize_extenders():
@@ -773,6 +821,7 @@ def initialize_extenders():
     set_registers(DEVICE_ROW_F)
     set_registers(DEVICE_ROW_G)
     set_registers(DEVICE_ROW_H)
+
 
 def set_registers(device):
     # Set all GPA pins as outputs by setting
