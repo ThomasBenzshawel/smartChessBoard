@@ -765,15 +765,25 @@ def initialize_extenders():
     GPIOA = 0x12  # Register for inputs A side
     GPIOB = 0x13  # Register for inputs B side
 
+    set_registers(DEVICE_ROW_A)
+    set_registers(DEVICE_ROW_B)
+    set_registers(DEVICE_ROW_C)
+    set_registers(DEVICE_ROW_D)
+    set_registers(DEVICE_ROW_E)
+    set_registers(DEVICE_ROW_F)
+    set_registers(DEVICE_ROW_G)
+    set_registers(DEVICE_ROW_H)
+
+def set_registers(device):
     # Set all GPA pins as outputs by setting
     # all bits of IODIRA register to 0
-    bus.write_byte_data(DEVICE_ROW_A, IODIRA, 0x00)
+    bus.write_byte_data(device, IODIRA, 0x00)
 
     # Set all 8 output bits to 0 (all lights off)
-    bus.write_byte_data(DEVICE_ROW_A, OLATA, 0x00)
+    bus.write_byte_data(device, OLATA, 0x00)
 
     # Set all 8 GPB pins as input.
-    bus.write_byte_data(DEVICE_ROW_A, IODIRB, 0xFF)
+    bus.write_byte_data(device, IODIRB, 0xFF)
 
 
 def run_board():
